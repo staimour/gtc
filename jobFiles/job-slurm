@@ -1,0 +1,49 @@
+#!/bin/bash -l
+#SBATCH --job-name=gtcrun
+#SBATCH --output=gtcrun-%j.o
+#SBATCH --error=gtcrun-%j.e
+#SBATCH --account m808
+#SBATCH --nodes=32
+#SBATCH --ntasks-per-node=2
+#SBATCH --time=00:30:00
+#SBATCH --partition=regular
+
+# on NERSC systems, use partitions 'debug' or 'regular'.
+
+# set number of jobs to be chained.  
+# to comply with NERSC policy, this 
+# should always be '1' for debug partition.
+CHAIN_JOB_MAX=1
+
+: ${CHAIN_JOB_NUMBER:="1"}
+: ${JOBDIR:=$SLURM_SUBMIT_DIR}
+
+cd $JOBDIR
+
+# call next chained job
+if [[ ${CHAIN_JOB_NUMBER} -lt ${CHAIN_JOB_MAX} ]] 
+then
+  (( CHAIN_JOB_NUMBER++ ))
+  sbatch --export=CHAIN_JOB_NUMBER=${CHAIN_JOB_NUMBER},JOBDIR -d=afterok:${SLURM_JOB_ID} job-slurm
+fi
+
+# automatically set # of nodes and # of tasks-per-node based on choices at top
+SRUN_OPT="-N $SLURM_JOB_NUM_NODES --ntasks-per-node $SLURM_NTASKS_PER_NODE"
+# automatically determine # OpenMP threads based on tasks-per-node and cores-per-node
+export OMP_NUM_THREADS=$(($SLURM_CPUS_ON_NODE/(2*$SLURM_NTASKS_PER_NODE)))
+# comment out this line to disable OpenMP
+SRUN_OPT="$SRUN_OPT -c $OMP_NUM_THREADS"
+
+srun $SRUN_OPT ./gtc
+
+# increment 'irun' variable in gtc.in by 1, for chained jobs.
+irun_n=`sed -n 's/^ *irun=\([0-9]*\).*/\1/p' gtc.in`
+(( irun_m = irun_n + 1)) 
+sed -i "s/^\( *\)irun=${irun_n}/\1irun=${irun_m}/" gtc.in
+
+# rename gtc.out for chained jobs, so restarts don't overwrite
+mv gtc.out gtc.out${irun_n}
+
+# short delay 
+sleep 3
+

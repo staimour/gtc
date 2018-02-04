@@ -1,0 +1,77 @@
+clc;
+clear all;
+
+run pathfile;
+
+R0=1;
+PE=32;
+ndiag=1;
+% 
+for i=1:PE
+    tracking=[path,'trackp_dir/TRACKP.',num2str(i-1,'%5.5d')];
+    fid(i)=fopen(tracking);
+end
+
+for i=1:PE
+    istep=fgetl(fid(i));
+    npp=fgetl(fid(i));
+    npp=str2num(npp);
+    
+    for j=1:npp
+    data=fgetl(fid(i));
+    line1=str2num(data);
+ %   data=fgetl(fid(i));
+ %   line2=str2num(data);
+ %   data=fgetl(fid(i));
+ %   line3=str2num(data);
+    
+    x=line1(1)*R0;
+    y=line1(2)*R0;
+    z=line1(3);
+ %   energy=line2(1);
+    
+    X(1)=x;
+    Y(1)=y;
+    Z(1)=z;
+    
+    
+%    tag(1)=line2(4);
+ %   tag(2)=line3(1);
+    end
+end
+
+for i=1:PE
+    istep=fgetl(fid(i));
+  while istep~=-1  
+    istep=str2num(istep);
+    npp=fgetl(fid(i));
+    npp=str2num(npp);
+    
+    for j=1:npp
+      data=fgetl(fid(i));
+      line1=str2num(data);
+   %   data=fgetl(fid(i));
+   %   line2=str2num(data);
+   %   data=fgetl(fid(i));
+   %   line3=str2num(data);
+    
+      x=line1(1)*R0;
+      y=line1(2)*R0;
+      z=line1(3);
+     
+    
+      X(istep)=x;
+      Y(istep)=y;
+      Z(istep)=z;
+      
+      
+    end
+   %while  (line2(4)~=tag(1))
+   %end
+    
+    
+   
+    istep=fgetl(fid(i));
+   end  
+  %end
+end

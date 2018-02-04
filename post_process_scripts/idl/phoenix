@@ -1,0 +1,19 @@
+pref_set,'idl_path','+${HOME}/idl/gtc:<idl_default>',/commit
+
+;.r ${HOME}/idl/gtc/hplt
+;.r ${HOME}/idl/gtc/splt
+;.r ${HOME}/idl/gtc/shear
+;.r ${HOME}/idl/gtc/history
+;.r ${HOME}/idl/gtc/snap
+;.r ${HOME}/idl/gtc/equilibrium
+;.r ${HOME}/idl/gtc/rtime
+;.r ${HOME}/idl/gtc/plt
+
+.r hplt
+.r splt
+.r shear
+.r history
+.r snap
+.r equilibrium
+.r rtime
+.r plt

@@ -1,0 +1,8 @@
+.r /home/zlin/idl/shear
+;.r /home/zlin/idl/hplt
+.r /home/zlin/idl/splt
+.r /home/zlin/idl/history
+.r /home/zlin/idl/snapshot
+.r /home/zlin/idl/equilibrium
+.r /home/zlin/idl/rtime
+.r /home/zlin/idl/plt
